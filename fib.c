@@ -1,6 +1,12 @@
 #include "fib.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "bignum-helper.h"
+
+#define BUFFER_SIZE 1024
 
 typedef void (*bn_func_ptr)(int, struct bn*);
 
@@ -55,7 +61,7 @@ void fib_init() {
 void process_input() {
     struct bn result;
     bignum_init(&result);
-    char str[1000];
+    char str[BUFFER_SIZE];
     int n;
 
     printf("Enter Fibonacci number to calculate:\n");
@@ -67,7 +73,11 @@ void process_input() {
         }
         bignum_init(&result);
         fib(n, &result);
-        bignum_to_string(&result, str, 1000);
+        bignum_to_string(&result, str, BUFFER_SIZE);
+        char decStr[1024];
+        bignum_to_decimal_string(&result, decStr, sizeof(decStr));
+
+        printf("Decimal representation: %s\n", decStr);
         printf("Fib(%d) = %s\n", n, str);
     }
 }

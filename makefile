@@ -8,7 +8,7 @@ CFLAGS = -Wall -g
 TARGET = memofib
 
 # Source files
-SRCS = fib.c ./tiny-bignum-c/bn.c
+SRCS = fib.c ./tiny-bignum-c/bn.c bignum-helper.c
 
 # Object files
 OBJS = $(SRCS:.c=.o)

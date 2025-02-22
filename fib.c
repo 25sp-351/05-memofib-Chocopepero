@@ -2,7 +2,6 @@
 
 #include <stdio.h>
 
-
 typedef void (*bn_func_ptr)(int, struct bn*);
 
 bn_func_ptr original_provider = NULL;
@@ -11,35 +10,35 @@ bn_func_ptr fib_provider      = NULL;
 struct bn fib_cache[MAX_N + 1];
 int computed[MAX_N + 1];
 
-void fib(int n, struct bn* result) {
-    if (n == 0) {
+void fib(int term, struct bn* result) {
+    if (term == 0) {
         bignum_from_int(result, 0);
         return;
     }
-    if (n == 1) {
+    if (term == 1) {
         bignum_from_int(result, 1);
         return;
     }
-    struct bn a, b;
-    bignum_init(&a);
-    bignum_init(&b);
+    struct bn nsub1;
+    struct bn nsub2;
+    bignum_init(&nsub1);
+    bignum_init(&nsub2);
 
-    (*fib_provider)(n - 1, &a);
-    (*fib_provider)(n - 2, &b);
+    (*fib_provider)(term - 1, &nsub1);
+    (*fib_provider)(term - 2, &nsub2);
 
-    bignum_add(&a, &b, result);
-
-    bignum_assign(&fib_cache[n], result);
-    computed[n] = 1;   
+    bignum_add(&nsub1, &nsub2, result);
 }
 
-void cache(int n, struct bn* result) {
-    if (computed[n] == -1) {
-        //printf("%d Not found, calculating\n", n);
-        (*original_provider)(n, result);
+void cache(int fibNTerm, struct bn* result) {
+    if (computed[fibNTerm] == -1) {
+        // printf("%d Not found, calculating\n", n);
+        (*original_provider)(fibNTerm, result);
+        bignum_assign(&fib_cache[fibNTerm], result);
+        computed[fibNTerm] = 1;
     } else {
-        //printf("%d Found, using cache\n", n);
-        bignum_assign(result, &fib_cache[n]);
+        // printf("%d Found, using cache\n", n);
+        bignum_assign(result, &fib_cache[fibNTerm]);
     }
 }
 
@@ -59,8 +58,13 @@ void process_input() {
     char str[1000];
     int n;
 
-    printf("Enter Fibonacci number to calculate (Ctrl+D to end):\n");
+    printf("Enter Fibonacci number to calculate:\n");
     while (scanf("%d", &n) != EOF) {
+        if (n < 0 || n > MAX_N) {
+            printf("Invalid input. Please enter a number between 0 and %d\n",
+                   MAX_N);
+            continue;
+        }
         bignum_init(&result);
         fib(n, &result);
         bignum_to_string(&result, str, 1000);

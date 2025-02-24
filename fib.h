@@ -6,5 +6,4 @@
 
 void fib(int n, struct bn* result);
 void cache(int n, struct bn* result);
-void fib_init();
 #endif

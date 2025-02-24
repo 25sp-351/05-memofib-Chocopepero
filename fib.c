@@ -53,8 +53,3 @@ void process_input() {
     }
 }
 
-int main() {
-    fib_init();
-    process_input();
-    return 0;
-}

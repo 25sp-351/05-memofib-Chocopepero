@@ -2,30 +2,43 @@
 CC = gcc
 
 # Compiler flags
-CFLAGS = -Wall -g
+CFLAGS = -Wall -g -I./munit -g3 -O0
 
 # Target executable
-TARGET = memofib
+EXEC = memofib
 
 # Source files
-SRCS = fib.c memo.c ./tiny-bignum-c/bn.c bignum-helper.c
-
-# Object files
+SRCS = main.c fib.c memo.c ./tiny-bignum-c/bn.c bignum-helper.c
 OBJS = $(SRCS:.c=.o)
 
-# Default target
-all: $(TARGET)
+# MUnit Test Files
+TEST_SRCS = test_fib.c fib.c memo.c ./tiny-bignum-c/bn.c bignum-helper.c munit/munit.c
+TEST_OBJS = $(TEST_SRCS:.c=.o)
+TEST_EXEC = test_fib
 
-# Link object files to create the executable
-$(TARGET): $(OBJS)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS)
+# Default Target: Compile Program
+all: $(EXEC)
 
-# Compile source files into object files
+# Compile Executable
+$(EXEC): $(OBJS)
+	$(CC) $(CFLAGS) -o $(EXEC) $(OBJS) -lm
+
+# Compile Object Files
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Clean up build files
-clean:
-	rm -f $(OBJS) $(TARGET)
+# Compile Test Executable
+$(TEST_EXEC): $(TEST_OBJS)
+	$(CC) $(CFLAGS) -o $(TEST_EXEC) $(TEST_OBJS) -lm
 
-.PHONY: all clean
+# Run MUnit Tests
+test: $(TEST_EXEC)
+	@echo "Running MUnit Tests..."
+	./$(TEST_EXEC)
+
+# Clean Build Files
+clean:
+	rm -f $(OBJS) $(EXEC) $(TEST_OBJS) $(TEST_EXEC)
+
+# Phony Targets
+.PHONY: all test clean
